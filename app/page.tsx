@@ -1,4 +1,5 @@
+import { Chat } from "@/components/chat";
 
 export default function Page() {
-return <div>Hello world</div>;
+  return <Chat />;
 }
