@@ -1,36 +1,170 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Assignment - AI Chat Application
+
+A Next.js application with AI-powered chat functionality, PostgreSQL database, and PII detection features.
+
+## Tech Stack
+
+- **Framework**: Next.js 16
+- **Runtime**: Bun
+- **Database**: PostgreSQL 16 (via Docker)
+- **ORM**: Drizzle ORM
+- **AI**: OpenAI SDK
+- **Styling**: Tailwind CSS 4
+
+## Prerequisites
+
+Before running this project, make sure you have the following installed:
+
+- [Bun](https://bun.sh/) (v1.0 or later)
+- [Docker](https://www.docker.com/) and Docker Compose
+- An OpenAI API key
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+git clone <repository-url>
+cd assignment
+```
+
+### 2. Install dependencies
+
+```bash
+bun install
+```
+
+### 3. Set up environment variables
+
+Create a `.env` file in the root directory:
+
+```bash
+cp .env.example .env
+```
+
+Then update the `.env` file with your credentials:
+
+```env
+DATABASE_URL=postgresql://assignment_user:assignment_password@localhost:5432/assignment_db
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+### 4. Start the database
+
+Start the PostgreSQL database using Docker Compose:
+
+```bash
+docker compose up -d
+```
+
+This will start a PostgreSQL 16 container with the following default credentials:
+
+- **Database**: `assignment_db`
+- **User**: `assignment_user`
+- **Password**: `assignment_password`
+- **Port**: `5432`
+
+### 5. Run database migrations
+
+Generate and apply the database migrations:
+
+```bash
+bun run db:migrate
+```
+
+### 6. Start the development server
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command               | Description                                |
+| --------------------- | ------------------------------------------ |
+| `bun dev`             | Start the development server               |
+| `bun build`           | Build the application for production       |
+| `bun start`           | Start the production server                |
+| `bun lint`            | Run ESLint                                 |
+| `bun run db:generate` | Generate new database migrations           |
+| `bun run db:migrate`  | Apply database migrations                  |
+| `bun run db:studio`   | Open Drizzle Studio to browse the database |
 
-## Learn More
+## Database Management
 
-To learn more about Next.js, take a look at the following resources:
+### View database with Drizzle Studio
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+bun run db:studio
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This opens a web interface to browse and manage your database.
 
-## Deploy on Vercel
+### Generate new migrations
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+After modifying the schema in `db/schema.ts`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+bun run db:generate
+```
+
+### Stop the database
+
+```bash
+docker compose down
+```
+
+To also remove the data volume:
+
+```bash
+docker compose down -v
+```
+
+## Project Structure
+
+```
+├── app/                  # Next.js App Router pages and API routes
+│   ├── [id]/            # Dynamic chat page
+│   ├── api/chat/        # Chat API endpoint
+│   ├── actions.ts       # Server actions
+│   └── ...
+├── components/          # React components
+│   ├── ui/              # UI components (buttons, inputs, etc.)
+│   ├── chat.tsx         # Chat component
+│   ├── pii-blur.tsx     # PII detection/blur component
+│   └── sidebar.tsx      # Sidebar navigation
+├── db/                  # Database configuration
+│   ├── migrations/      # SQL migrations
+│   ├── schema.ts        # Drizzle schema definitions
+│   ├── queries.ts       # Database queries
+│   └── mutations.ts     # Database mutations
+├── lib/                 # Utility functions
+│   ├── pii.ts           # PII detection utilities
+│   └── utils.ts         # General utilities
+└── ...
+```
+
+## Troubleshooting
+
+### Database connection issues
+
+1. Ensure Docker is running
+2. Check if the PostgreSQL container is up: `docker compose ps`
+3. Verify the `DATABASE_URL` in your `.env` file matches the Docker Compose configuration
+
+### Port conflicts
+
+If port 5432 is already in use, you can change it in `docker-compose.yml`:
+
+```yaml
+ports:
+  - "5433:5432" # Change 5432 to another port
+```
+
+Then update your `DATABASE_URL` accordingly.
+
+## License
+
+This project is private.
