@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: assignment-postgres
+    restart: unless-stopped
+    environment:
+      # Adjust these or move them into a .env file as needed
+      POSTGRES_DB: assignment_db
+      POSTGRES_USER: assignment_user
+      POSTGRES_PASSWORD: assignment_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+
