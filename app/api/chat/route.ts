@@ -2,11 +2,11 @@ import { streamText, convertToModelMessages, UIMessage } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { generateChatTitle } from "@/app/actions";
 import { createChat, updateChatMessages } from "@/db/mutations";
-import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export async function POST(req: Request) {
   try {
-    const { messages, id }: { messages: UIMessage[]; id?: string } =
+    const { messages, id }: { messages: UIMessage[]; id: string } =
       await req.json();
 
     const result = streamText({
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     return result.toUIMessageStreamResponse({
       originalMessages: messages,
       onFinish: async ({ messages: updatedMessages }) => {
-        if (id) {
+        if (messages.length > 1) {
           // Existing chat: update messages
           await updateChatMessages(id, updatedMessages);
         } else {
@@ -27,10 +27,12 @@ export async function POST(req: Request) {
               ? messages[0].parts[0].text
               : "New Chat"
           );
-          const generatedId = crypto.randomUUID();
-          await createChat(generatedId, title, updatedMessages);
-          redirect(`/${generatedId}`); // Navigate to the new post page
+          await createChat(id, title, updatedMessages);
         }
+
+        // Revalidate the root layout so `getChatTitles` in `app/layout.tsx`
+        // is re-run and the sidebar chat list stays in sync.
+        revalidatePath("/", "layout");
       },
     });
   } catch (error) {

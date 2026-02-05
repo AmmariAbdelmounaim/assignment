@@ -9,7 +9,6 @@ interface ChatPageProps {
 export default async function ChatPage({ params }: ChatPageProps) {
   const id = (await params).id;
   const chat = await getChatById(id);
-
   if (!chat) {
     notFound();
   }

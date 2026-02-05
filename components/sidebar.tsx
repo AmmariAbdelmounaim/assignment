@@ -45,8 +45,8 @@ export default function Sidebar({ chatTitles }: SidebarProps) {
       <Separator className="bg-sidebar-border" />
 
       <div className="px-4 py-3">
-        <Button className="w-full" size="sm">
-          New chat
+        <Button className="w-full" size="sm" asChild>
+          <Link href={"/"}>New chat</Link>
         </Button>
       </div>
     </aside>

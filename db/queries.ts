@@ -1,6 +1,9 @@
+"server only";
+
 import { DbError } from "@/lib/utils";
 import { db } from "./index";
 import { Chat, ChatTitle } from "./schema";
+import { cacheTag } from "next/cache";
 
 // a query that retrives chats by Id
 export async function getChatById(id: string): Promise<Chat | undefined> {
